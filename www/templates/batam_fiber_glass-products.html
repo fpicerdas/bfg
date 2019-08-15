@@ -1,0 +1,57 @@
+	<ion-view view-title=" Products" hide-nav-bar="false" >
+		<!-- popover -->
+		<ion-nav-buttons side="right">
+			<button class="button button-icon button-clear ion-android-more-vertical" id="menu-popover" ng-click="popover.show($event)"></button>
+		</ion-nav-buttons>
+		<!-- ./popover -->
+		<ion-nav-title> Products</ion-nav-title>
+		<!-- content -->
+		<ion-content delegate-handle="top"   id="page-products" class=" page-products">
+		
+			<!-- code refresh -->
+			<ion-refresher pulling-text="{{ 'Pull to refresh...' | translate }}"  on-refresh="doRefresh()"></ion-refresher>
+			<!-- ./code refresh -->
+			
+
+			<!-- code search -->
+			<ion-list class="card list" >
+				<div class="item item-input">
+					<i class="icon ion-search placeholder-icon"></i>
+					<input type="search" ng-model="filter_products_tables" placeholder="{{ 'Search' | translate }}" aria-label="filter products_tables" />
+				</div>
+			</ion-list>
+			<!-- ./code search -->
+
+
+			<!-- code listing -->
+			<div class="list animate-none">
+				<div class="list card" ng-repeat="item in products_tables | filter:filter_products_tables as results" ng-init="$last ? fireEvent() : null" href="#/batam_fiber_glass/products_table_singles/{{item.id}}" >
+					<div class="item item-dark"  ng-bind-html="item.title | to_trusted"></div>
+					<div class="item item-thumbnail-left item-text-wrap">
+						<img alt="" class="full-image" ng-src="{{item.image}}" />
+				</div>
+					<a class="item button button-clear dark ink" href="#/batam_fiber_glass/products_table_singles/{{item.id}}">More</a>
+				</div>
+			</div>
+			<!-- ./code listing -->
+			<!-- code infinite scroll -->
+			<ion-list class="list">
+				<ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="onInfinite()" distance="5px" ng-if="hasMoreData"></ion-infinite-scroll>
+			</ion-list>
+			<!-- ./code infinite scroll -->
+
+
+			<!-- code search result not found -->
+			<ion-list class="list">
+				<div class="item" ng-if="results.length == 0" >
+					<p>{{ 'No results found...!' | translate }}</p>
+				</div>
+			</ion-list>
+			<!-- code search result not found -->
+
+
+
+
+		</ion-content>
+		<!-- ./content -->
+	</ion-view>

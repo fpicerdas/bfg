@@ -1,0 +1,41 @@
+	<ion-view view-title=" Products_table Detail" hide-nav-bar="false" >
+		<!-- popover -->
+		<ion-nav-buttons side="right">
+			<button class="button button-icon button-clear ion-android-more-vertical" id="menu-popover" ng-click="popover.show($event)"></button>
+		</ion-nav-buttons>
+		<!-- ./popover -->
+		<ion-nav-title> Products_table Detail</ion-nav-title>
+		<!-- content -->
+		<ion-content delegate-handle="top"  scroll="true"   id="page-products_table_singles" class="page-products_table_singles">
+		
+			<ion-refresher pulling-text="Pull to refresh..."  on-refresh="doRefresh()"></ion-refresher>
+			<div class="hero slide-up dark-bg" style="background-image: url('data/images/header/header0.jpg');">
+				<div class="padding-horizontal padding-bottom content">
+					<img alt="" class="avatar" ng-src="{{products_table.image}}" />
+					<h3><a class="light"  ng-bind-html=" | strHTML" ></a></h3>
+					<h4 class="light">&nbsp;</h4>
+				</div>
+			</div>
+			<div class="tabs tabs-dark tabs-icon-top static">
+				<!-- a ng-click="$ionicGoBack()" class="tab-item" -->
+				<a href="#/batam_fiber_glass/products_tables" class="tab-item">
+					<i class="icon ion-ios-albums-outline"></i> {{ 'List' | translate }}
+				</a>
+				<a class="tab-item tab-item-active active">
+					<i class="icon ion-ios-list-outline"></i> {{ 'Detail' | translate }}
+				</a>
+				</div>
+			<div class="list ">
+
+					<!-- images -->
+					<!-- ./images -->
+
+					<!-- to_trusted -->
+					<div class="item item-text-wrap noborder to_trusted {{ fontsize }}" ng-bind-html="products_table.content | strHTML"></div>
+					<!-- ./to_trusted -->
+			</div>
+			<br/><br/><br/>
+
+		</ion-content>
+		<!-- ./content -->
+	</ion-view>

@@ -1,0 +1,18 @@
+
+        {
+          "name": "Batam Fiber Glass Lite",
+          "short_name": "Batam Fiber Glass",
+          "start_url": "index.html",
+          "display": "standalone",
+          "icons":[{"src": "data/images/background/logo(2).png"}],
+          "prefer_related_applications": true,
+          "related_applications": [
+            {
+              "platform": "play",
+              "id": "com.imabuilder.abbayosua.batamfiberglass"
+            }
+          ],
+         "background_color": "#ffffff",
+         "theme_color": "#000000"
+        }
+                
