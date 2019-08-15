@@ -48,45 +48,6 @@ angular.module("batam_fiber_glass", ["ngCordova","ionic","ionMdInput","ionic-mat
 			if(window.StatusBar) {
 				StatusBar.styleDefault();
 			}
-			// this will create a banner on startup
-			//required: cordova plugin add cordova-plugin-admob-free --save
-			if (typeof admob !== "undefined"){
-				var admobid = {};
-				admobid = {
-					banner: "asdas",
-					interstitial: "asdsad",
-				};
-				
-				// banner
-				try{
-					admob.banner.config({
-						id: admobid.banner,
-						autoShow: false
-					});
-					admob.banner.prepare();
-				}catch(err){ 
-					//alert(err.message);
-				}
-				
-				$ionicPlatform.on("pause",function(){
-					try{
-						admob.banner.hide();
-					}catch(err){ 
-						//alert(err.message);
-					}
-				});
-				
-				// interstitial
-				try{
-					admob.interstitial.config({
-						id: admobid.interstitial,
-						autoShow: false
-					});
-					admob.interstitial.prepare();
-				}catch(err){ 
-					//alert(err.message);
-				}
-			}
 
 
 			//required: cordova plugin add onesignal-cordova-plugin --save

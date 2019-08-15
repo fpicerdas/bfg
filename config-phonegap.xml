@@ -89,7 +89,6 @@
 	<plugin name="cordova-plugin-statusbar" />
 	<plugin name="ionic-plugin-keyboard" />
 	<!-- ./default -->
-	<plugin name="cordova-plugin-admob-free" />
 	<plugin name="cordova-admob-sdk" />
 	<plugin name="cordova-plugin-dialogs" />
 	<plugin name="cordova-plugin-inappbrowser" />
@@ -114,7 +113,4 @@
 	<platform name="ios">
 	</platform>
 	<preference name="phonegap-version" value="cli-8.0.0" />
-	<plugin name="cordova-plugin-admob-free">
-		<variable name="ADMOB_APP_ID" value="adsadas" />
-	</plugin>
 </widget>
