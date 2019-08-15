@@ -2308,7 +2308,7 @@ $rootScope.updateUser = function(){
 		var $messages, $title = null;
 		$http({
 				method:"POST",
-				url: "http://abbayosua.host/apps/bfg/rest_api.php?json=submit&form=me",
+				url: "http://abbayosua.host/apps/bfg/rest-api.php?json=submit&form=me",
 				data: $httpParamSerializer($scope.current_user),   
 				headers: {"Content-Type":"application/x-www-form-urlencoded"}  
 			})
