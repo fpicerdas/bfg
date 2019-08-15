@@ -91,7 +91,7 @@
 	<!-- ./default -->
 	<plugin name="cordova-admob-sdk" source="npm"/>
 	<plugin name="cordova-plugin-dialogs" source="npm"/>
-	<plugin name="cordova-plugin-inappbrowser"  source="npm" />
+	<plugin name="cordova-plugin-inappbrowser" spec="3.1.0" source="npm" />
 	<plugin name="onesignal-cordova-plugin" source="npm"/>
 	<plugin name="cordova-promise-polyfill" source="npm"/>
 	<platform name="android">
