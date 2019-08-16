@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.imabuilder.abbayosua.batamfiberglass" version="1.0.190815" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.imabuilder.abbayosua.batamfiberglass" version="1.0.190816" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>BatamFiberGlass</name>
 	<description>Batam Fiber Glass App</description>
 	<author email="abbsiagian@gmail.com" href="http://creativecode.Design">Abba Yosua</author>
@@ -82,18 +82,18 @@
 		<param name="ios-package" onload="true" value="CDVStatusBar"/>
 	</feature>
 	<!-- default -->
-	<plugin name="cordova-plugin-device"  source="npm"/>
-	<plugin name="cordova-plugin-console" source="npm"/>
-	<plugin name="cordova-plugin-whitelist" source="npm"/>
-	<plugin name="cordova-plugin-splashscreen" source="npm"/>
-	<plugin name="cordova-plugin-statusbar" source="npm"/>
-	<plugin name="ionic-plugin-keyboard" source="npm"/>
+	<plugin name="cordova-plugin-device" />
+	<plugin name="cordova-plugin-console" />
+	<plugin name="cordova-plugin-whitelist" />
+	<plugin name="cordova-plugin-splashscreen" />
+	<plugin name="cordova-plugin-statusbar" />
+	<plugin name="ionic-plugin-keyboard" />
 	<!-- ./default -->
-	<plugin name="cordova-admob-sdk" source="npm"/>
-	<plugin name="cordova-plugin-dialogs" source="npm"/>
-	<plugin name="cordova-plugin-inappbrowser" spec="3.1.0" source="npm" />
-	<plugin name="onesignal-cordova-plugin" source="npm"/>
-	<plugin name="cordova-promise-polyfill" source="npm"/>
+	<plugin name="cordova-admob-sdk" />
+	<plugin name="cordova-plugin-dialogs" />
+	<plugin name="cordova-plugin-inappbrowser" />
+	<plugin name="onesignal-cordova-plugin" />
+	<plugin name="cordova-promise-polyfill" />
 	<platform name="android">
 		<!-- splash and icon for build using ionic/cordova -->
 		<icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
@@ -147,5 +147,4 @@
 		<splash height="960" src="resources/ios/splash/Default@2x~iphone.png" width="640"/>
 		<splash height="480" src="resources/ios/splash/Default~iphone.png" width="320"/>
 	</platform>
-	<preference name="phonegap-version" value="cli-9.0.0" />
 </widget>
