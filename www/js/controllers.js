@@ -495,6 +495,575 @@ $ionicConfig.backButton.text("");
 	controller_by_user();
 })
 
+// TODO: custom_messagesCtrl --|-- 
+.controller("custom_messagesCtrl", function($ionicConfig,$scope,$rootScope,$state,$location,$ionicScrollDelegate,$ionicListDelegate,$http,$httpParamSerializer,$stateParams,$timeout,$interval,$ionicLoading,$ionicPopup,$ionicPopover,$ionicActionSheet,$ionicSlideBoxDelegate,$ionicHistory,ionicMaterialInk,ionicMaterialMotion,$window,$ionicModal,base64,md5,$document,$sce,$ionicGesture,$translate,tmhDynamicLocale){
+	
+	$rootScope.headerExists = true;
+	$rootScope.ionWidth = $document[0].body.querySelector(".view-container").offsetWidth || 412;
+	$rootScope.grid64 = parseInt($rootScope.ionWidth / 64) ;
+	$rootScope.grid80 = parseInt($rootScope.ionWidth / 80) ;
+	$rootScope.grid128 = parseInt($rootScope.ionWidth / 128) ;
+	$rootScope.grid256 = parseInt($rootScope.ionWidth / 256) ;
+	$rootScope.last_edit = "table (custom_messages)" ;
+	$scope.$on("$ionicView.afterEnter", function (){
+		var page_id = $state.current.name ;
+		$rootScope.page_id = page_id.replace(".","-") ;
+	});
+	if($rootScope.headerShrink == true){
+		$scope.$on("$ionicView.enter", function(){
+			$scope.scrollTop();
+		});
+	};
+	// TODO: custom_messagesCtrl --|-- $scope.scrollTop
+	$rootScope.scrollTop = function(){
+		$timeout(function(){
+			$ionicScrollDelegate.$getByHandle("top").scrollTop();
+		},100);
+	};
+	// TODO: custom_messagesCtrl --|-- $scope.toggleGroup
+	$scope.toggleGroup = function(group) {
+		if ($scope.isGroupShown(group)) {
+			$scope.shownGroup = null;
+		} else {
+			$scope.shownGroup = group;
+		}
+	};
+	
+	$scope.isGroupShown = function(group) {
+		return $scope.shownGroup === group;
+	};
+	
+	// TODO: custom_messagesCtrl --|-- $scope.redirect
+	// redirect
+	$scope.redirect = function($url){
+		$window.location.href = $url;
+	};
+	
+	// Set Motion
+	$timeout(function(){
+		ionicMaterialMotion.slideUp({
+			selector: ".slide-up"
+		});
+	}, 300);
+	// TODO: custom_messagesCtrl --|-- $scope.showAuthentication
+	$scope.showAuthentication  = function(){
+		var authPopup = $ionicPopup.show({
+			template: ' This page required login',
+			title: "Authorization",
+			subTitle: "Authorization is required",
+			scope: $scope,
+			buttons: [
+				{text:"Cancel",onTap: function(e){
+					$state.go("batam_fiber_glass.dashboard");
+				}},
+			],
+		}).then(function(form){
+		},function(err){
+		},function(msg){
+		});
+	};
+	
+	// set default parameter http
+	var http_params = {};
+	
+	// set HTTP Header 
+	var http_header = {
+		headers: {
+		},
+		params: http_params
+	};
+	var targetQuery = ""; //default param
+	var raplaceWithQuery = "";
+	
+	// TODO: custom_messagesCtrl --|-- $scope.splitArray
+	$scope.splitArray = function(items,cols,maxItem) {
+		var newItems = [];
+		if(maxItem == 0){
+			maxItem = items.length;
+		}
+		if(items){
+			for (var i=0; i < maxItem; i+=cols) {
+				newItems.push(items.slice(i, i+cols));
+			}
+		}
+		return newItems;
+	}
+	$scope.gmapOptions = {options: { scrollwheel: false }};
+	
+	var fetch_per_scroll = 1;
+	// animation loading 
+	$ionicLoading.show();
+	
+	
+	// TODO: custom_messagesCtrl --|-- $scope.fetchURL
+	$scope.fetchURL = "";
+	// TODO: custom_messagesCtrl --|-- $scope.fetchURLp
+	$scope.fetchURLp = "?callback=JSON_CALLBACK";
+	// TODO: custom_messagesCtrl --|-- $scope.hashURL
+	$scope.hashURL = md5.createHash( $scope.fetchURL.replace(targetQuery,raplaceWithQuery));
+	
+	
+	$scope.noMoreItemsAvailable = false; //readmore status
+	var lastPush = 0;
+	var data_custom_messagess = [];
+	
+	localforage.getItem("data_custom_messagess_" + $scope.hashURL, function(err, get_custom_messagess){
+		if(get_custom_messagess === null){
+			data_custom_messagess =[];
+		}else{
+			data_custom_messagess = JSON.parse(get_custom_messagess);
+			$scope.data_custom_messagess =JSON.parse( get_custom_messagess);
+			$scope.custom_messagess = [];
+			for(lastPush = 0; lastPush < 50; lastPush++) {
+				if (angular.isObject(data_custom_messagess[lastPush])){
+					$scope.custom_messagess.push(data_custom_messagess[lastPush]);
+				};
+			}
+			$timeout(function() {
+				$ionicLoading.hide();
+				controller_by_user();
+			},200);
+		}
+	}).then(function(value){
+	}).catch(function (err){
+	})
+	if(data_custom_messagess === null ){
+		data_custom_messagess =[];
+	}
+	if(data_custom_messagess.length === 0 ){
+		$timeout(function() {
+			var url_request = $scope.fetchURL.replace(targetQuery,raplaceWithQuery);
+			// overwrite HTTP Header 
+			http_header = {
+				headers: {
+				},
+				params: http_params
+			};
+			// TODO: custom_messagesCtrl --|-- $http.get
+			$http.get(url_request,http_header).then(function(response) {
+				data_custom_messagess = response.data;
+				$scope.data_custom_messagess = response.data;
+				// TODO: custom_messagesCtrl --|---------- set:localforage
+				localforage.setItem("data_custom_messagess_" + $scope.hashURL, JSON.stringify(data_custom_messagess));
+				$scope.custom_messagess = [];
+				for(lastPush = 0; lastPush < 50; lastPush++) {
+					if (angular.isObject(data_custom_messagess[lastPush])){
+						$scope.custom_messagess.push(data_custom_messagess[lastPush]);
+					};
+				}
+			},function(response) {
+			
+				$timeout(function() {
+					var url_request = $scope.fetchURLp.replace(targetQuery,raplaceWithQuery);
+					// overwrite HTTP Header 
+					http_header = {
+						headers: {
+						},
+						params: http_params
+					};
+					// TODO: custom_messagesCtrl --|------ $http.jsonp
+					$http.jsonp(url_request,http_header).success(function(data){
+						data_custom_messagess = data;
+						$scope.data_custom_messagess = data;
+						$ionicLoading.hide();
+						// TODO: custom_messagesCtrl --|---------- set:localforage
+						localforage.setItem("data_custom_messagess_" + $scope.hashURL,JSON.stringify(data_custom_messagess));
+						controller_by_user();
+						$scope.custom_messagess = [];
+						for(lastPush = 0; lastPush < 50; lastPush++) {
+							if (angular.isObject(data_custom_messagess[lastPush])){
+								$scope.custom_messagess.push(data_custom_messagess[lastPush]);
+							};
+						}
+					}).error(function(data){
+					if(response.status ===401){
+						// TODO: custom_messagesCtrl --|------------ error:Unauthorized
+						$scope.showAuthentication();
+					}else{
+						// TODO: custom_messagesCtrl --|------------ error:Message
+						var data = { statusText:response.statusText, status:response.status };
+						var alertPopup = $ionicPopup.alert({
+							title: "Network Error" + " (" + data.status + ")",
+							template: "An error occurred while collecting data.",
+						});
+						$timeout(function() {
+							alertPopup.close();
+						}, 2000);
+					}
+					});
+				}, 200);
+		}).finally(function() {
+			$scope.$broadcast("scroll.refreshComplete");
+			// event done, hidden animation loading
+			$timeout(function() {
+				$ionicLoading.hide();
+				controller_by_user();
+				if(angular.isDefined($scope.data_custom_messagess.data)){
+					if($scope.data_custom_messagess.data.status ===401){
+						$scope.showAuthentication();
+						return false;
+					}
+				}
+			}, 200);
+		});
+	
+		}, 200);
+	}
+	
+	
+	// TODO: custom_messagesCtrl --|-- $scope.doRefresh
+	$scope.doRefresh = function(){
+		var url_request = $scope.fetchURL.replace(targetQuery,raplaceWithQuery);
+		// retry retrieving data
+		// overwrite http_header 
+		http_header = {
+			headers: {
+			},
+			params: http_params
+		};
+		// TODO: custom_messagesCtrl --|------ $http.get
+		$http.get(url_request,http_header).then(function(response) {
+			data_custom_messagess = response.data;
+			$scope.data_custom_messagess = response.data;
+			// TODO: custom_messagesCtrl --|---------- set:localforage
+			localforage.setItem("data_custom_messagess_" + $scope.hashURL,JSON.stringify(data_custom_messagess));
+			$scope.custom_messagess = [];
+			for(lastPush = 0; lastPush < 50; lastPush++) {
+				if (angular.isObject(data_custom_messagess[lastPush])){
+					$scope.custom_messagess.push(data_custom_messagess[lastPush]);
+				};
+			}
+		},function(response){
+			
+		// retrieving data with jsonp
+			$timeout(function() {
+			var url_request =$scope.fetchURLp.replace(targetQuery,raplaceWithQuery);
+				// overwrite http_header 
+				http_header = {
+					headers: {
+					},
+					params: http_params
+				};
+				// TODO: custom_messagesCtrl --|---------- $http.jsonp
+				$http.jsonp(url_request,http_header).success(function(data){
+					data_custom_messagess = data;
+					$scope.data_custom_messagess = data;
+					$ionicLoading.hide();
+					controller_by_user();
+					// TODO: custom_messagesCtrl --|---------- set:localforage
+					localforage.setItem("data_custom_messagess_"+ $scope.hashURL,JSON.stringify(data_custom_messagess));
+					$scope.custom_messagess = [];
+					for(lastPush = 0; lastPush < 50; lastPush++) {
+						if (angular.isObject(data_custom_messagess[lastPush])){
+							$scope.custom_messagess.push(data_custom_messagess[lastPush]);
+						};
+					}
+				}).error(function(resp){
+					if(response.status ===401){
+						// TODO: custom_messagesCtrl --|------------ error:Unauthorized
+						$scope.showAuthentication();
+					}else{
+						// TODO: custom_messagesCtrl --|------------ error:Message
+						var data = { statusText:response.statusText, status:response.status };
+						var alertPopup = $ionicPopup.alert({
+							title: "Network Error" + " (" + data.status + ")",
+							template: "An error occurred while collecting data.",
+						});
+					};
+				});
+			}, 200);
+		}).finally(function() {
+			$scope.$broadcast("scroll.refreshComplete");
+			// event done, hidden animation loading
+			$timeout(function() {
+				$ionicLoading.hide();
+				controller_by_user();
+			}, 500);
+		});
+	
+	};
+	if (data_custom_messagess === null){
+		data_custom_messagess = [];
+	};
+	// animation readmore
+	var fetchItems = function() {
+		for(var z=0;z<fetch_per_scroll;z++){
+			if (angular.isObject(data_custom_messagess[lastPush])){
+				$scope.custom_messagess.push(data_custom_messagess[lastPush]);
+				lastPush++;
+			}else{;
+				$scope.noMoreItemsAvailable = true;
+			}
+		}
+		$scope.$broadcast("scroll.infiniteScrollComplete");
+	};
+	
+	// event readmore
+	$scope.onInfinite = function() {
+		$timeout(fetchItems, 500);
+	};
+	
+	// create animation fade slide in right (ionic-material)
+	$scope.fireEvent = function(){
+		ionicMaterialInk.displayEffect();
+	};
+	// code 
+
+	// TODO: custom_messagesCtrl --|-- controller_by_user
+	// controller by user 
+	function controller_by_user(){
+		try {
+			
+//debug: all data
+//console.log(data_custom_messagess);
+$ionicConfig.backButton.text("");
+			
+		} catch(e){
+			console.log("%cerror: %cPage: `custom_messages` and field: `Custom Controller`","color:blue;font-size:18px","color:red;font-size:18px");
+			console.dir(e);
+		}
+	}
+	$scope.rating = {};
+	$scope.rating.max = 5;
+	
+	// animation ink (ionic-material)
+	ionicMaterialInk.displayEffect();
+	controller_by_user();
+})
+
+// TODO: custom_messages_singlesCtrl --|-- 
+.controller("custom_messages_singlesCtrl", function($ionicConfig,$scope,$rootScope,$state,$location,$ionicScrollDelegate,$ionicListDelegate,$http,$httpParamSerializer,$stateParams,$timeout,$interval,$ionicLoading,$ionicPopup,$ionicPopover,$ionicActionSheet,$ionicSlideBoxDelegate,$ionicHistory,ionicMaterialInk,ionicMaterialMotion,$window,$ionicModal,base64,md5,$document,$sce,$ionicGesture,$translate,tmhDynamicLocale){
+	
+	$rootScope.headerExists = true;
+	$rootScope.ionWidth = $document[0].body.querySelector(".view-container").offsetWidth || 412;
+	$rootScope.grid64 = parseInt($rootScope.ionWidth / 64) ;
+	$rootScope.grid80 = parseInt($rootScope.ionWidth / 80) ;
+	$rootScope.grid128 = parseInt($rootScope.ionWidth / 128) ;
+	$rootScope.grid256 = parseInt($rootScope.ionWidth / 256) ;
+	$rootScope.last_edit = "table (custom_messages)" ;
+	$scope.$on("$ionicView.afterEnter", function (){
+		var page_id = $state.current.name ;
+		$rootScope.page_id = page_id.replace(".","-") ;
+	});
+	if($rootScope.headerShrink == true){
+		$scope.$on("$ionicView.enter", function(){
+			$scope.scrollTop();
+		});
+	};
+	// TODO: custom_messages_singlesCtrl --|-- $scope.scrollTop
+	$rootScope.scrollTop = function(){
+		$timeout(function(){
+			$ionicScrollDelegate.$getByHandle("top").scrollTop();
+		},100);
+	};
+	// TODO: custom_messages_singlesCtrl --|-- $scope.toggleGroup
+	$scope.toggleGroup = function(group) {
+		if ($scope.isGroupShown(group)) {
+			$scope.shownGroup = null;
+		} else {
+			$scope.shownGroup = group;
+		}
+	};
+	
+	$scope.isGroupShown = function(group) {
+		return $scope.shownGroup === group;
+	};
+	
+	// TODO: custom_messages_singlesCtrl --|-- $scope.redirect
+	// redirect
+	$scope.redirect = function($url){
+		$window.location.href = $url;
+	};
+	
+	// Set Motion
+	$timeout(function(){
+		ionicMaterialMotion.slideUp({
+			selector: ".slide-up"
+		});
+	}, 300);
+	// TODO: custom_messages_singlesCtrl --|-- $scope.showAuthentication
+	$scope.showAuthentication  = function(){
+		var authPopup = $ionicPopup.show({
+			template: ' This page required login',
+			title: "Authorization",
+			subTitle: "Authorization is required",
+			scope: $scope,
+			buttons: [
+				{text:"Cancel",onTap: function(e){
+					$state.go("batam_fiber_glass.dashboard");
+				}},
+			],
+		}).then(function(form){
+		},function(err){
+		},function(msg){
+		});
+	};
+	
+	// set default parameter http
+	var http_params = {};
+
+	// set HTTP Header 
+	var http_header = {
+		headers: {
+		},
+		params: http_params
+	};
+	// animation loading 
+	$ionicLoading.show();
+	
+	// Retrieving data
+	var itemID = $stateParams.id;
+	// TODO: custom_messages_singlesCtrl --|-- $scope.fetchURL
+	$scope.fetchURL = "";
+	// TODO: custom_messages_singlesCtrl --|-- $scope.fetchURLp
+	$scope.fetchURLp = "?callback=JSON_CALLBACK";
+	// TODO: custom_messages_singlesCtrl --|-- $scope.hashURL
+	$scope.hashURL = md5.createHash($scope.fetchURL);
+	
+	var current_item = [];
+	localforage.getItem("data_custom_messagess_" + $scope.hashURL, function(err, get_datas){
+		if(get_datas === null){
+			current_item = [];
+		}else{
+			if(get_datas !== null){
+				var datas = JSON.parse(get_datas);
+				for (var i = 0; i < datas.length; i++) {
+					if((datas[i].id ===  parseInt(itemID)) || (datas[i].id === itemID.toString())) {
+						current_item = datas[i] ;
+					}
+				}
+			}
+			// event done, hidden animation loading
+			$timeout(function(){
+				$ionicLoading.hide();
+				$scope.custom_messages = current_item ;
+				controller_by_user();
+			}, 100);
+		};
+	}).then(function(value){
+	}).catch(function (err){
+	})
+	if( current_item.length === 0 ){
+		var itemID = $stateParams.id;
+		var current_item = [];
+	
+		// set HTTP Header 
+		http_header = {
+			headers: {
+			},
+			params: http_params
+		};
+		// TODO: custom_messages_singlesCtrl --|-- $http.get
+		$http.get($scope.fetchURL,http_header).then(function(response) {
+			// Get data single
+			var datas = response.data;
+			// TODO: custom_messages_singlesCtrl --|---------- set:localforage
+			localforage.setItem("data_custom_messagess_"+ $scope.hashURL,JSON.stringify(datas));
+			for (var i = 0; i < datas.length; i++) {
+				if((datas[i].id ===  parseInt(itemID)) || (datas[i].id === itemID.toString())) {
+					current_item = datas[i] ;
+				}
+			}
+		},function(data) {
+					// Error message
+					var alertPopup = $ionicPopup.alert({
+						title: "Network Error" + " (" + data.status + ")",
+						template: "An error occurred while collecting data.",
+					});
+					$timeout(function() {
+						alertPopup.close();
+					}, 2000);
+		}).finally(function() {
+			$scope.$broadcast("scroll.refreshComplete");
+			// event done, hidden animation loading
+			$timeout(function() {
+				$ionicLoading.hide();
+				$scope.custom_messages = current_item ;
+				controller_by_user();
+			}, 500);
+		});
+	}
+	
+	
+		// TODO: custom_messages_singlesCtrl --|-- $scope.doRefresh
+	$scope.doRefresh = function(){
+		// Retrieving data
+		var itemID = $stateParams.id;
+		var current_item = [];
+		// overwrite http_header 
+		http_header = {
+			headers: {
+			},
+			params: http_params
+		};
+		// TODO: custom_messages_singlesCtrl --|------ $http.get
+		$http.get($scope.fetchURL,http_header).then(function(response) {
+			// Get data single
+			var datas = response.data;
+			// TODO: custom_messages_singlesCtrl --|---------- set:localforage
+			localforage.setItem("data_custom_messagess_"+ $scope.hashURL,JSON.stringify(datas));
+			for (var i = 0; i < datas.length; i++) {
+				if((datas[i].id ===  parseInt(itemID)) || (datas[i].id === itemID.toString())) {
+					current_item = datas[i] ;
+				}
+			}
+		},function(data) {
+			// Error message
+		// TODO: custom_messages_singlesCtrl --|---------- $http.jsonp
+				$http.jsonp($scope.fetchURLp,http_header).success(function(response){
+					// Get data single
+					var datas = response;
+			// TODO: custom_messages_singlesCtrl --|---------- set:localforage
+			localforage.setItem("data_custom_messagess_"+ $scope.hashURL,JSON.stringify(datas));
+					for (var i = 0; i < datas.length; i++) {
+						if((datas[i].id ===  parseInt(itemID)) || (datas[i].id === itemID.toString())) {
+							current_item = datas[i] ;
+						}
+					}
+						$scope.$broadcast("scroll.refreshComplete");
+						// event done, hidden animation loading
+						$timeout(function() {
+							$ionicLoading.hide();
+							$scope.custom_messages = current_item ;
+							controller_by_user();
+						}, 500);
+					}).error(function(resp){
+						var alertPopup = $ionicPopup.alert({
+							title: "Network Error" + " (" + data.status + ")",
+							template: "An error occurred while collecting data.",
+						});
+					});
+		}).finally(function() {
+			$scope.$broadcast("scroll.refreshComplete");
+			// event done, hidden animation loading
+			$timeout(function() {
+				$ionicLoading.hide();
+				$scope.custom_messages = current_item ;
+				controller_by_user();
+			}, 500);
+		});
+	};
+	// code 
+
+	// TODO: custom_messages_singlesCtrl --|-- controller_by_user
+	// controller by user 
+	function controller_by_user(){
+		try {
+			
+$ionicConfig.backButton.text("");			
+		} catch(e){
+			console.log("%cerror: %cPage: `custom_messages_singles` and field: `Custom Controller`","color:blue;font-size:18px","color:red;font-size:18px");
+			console.dir(e);
+		}
+	}
+	$scope.rating = {};
+	$scope.rating.max = 5;
+	
+	// animation ink (ionic-material)
+	ionicMaterialInk.displayEffect();
+	controller_by_user();
+})
+
 // TODO: dashboardCtrl --|-- 
 .controller("dashboardCtrl", function($ionicConfig,$scope,$rootScope,$state,$location,$ionicScrollDelegate,$ionicListDelegate,$http,$httpParamSerializer,$stateParams,$timeout,$interval,$ionicLoading,$ionicPopup,$ionicPopover,$ionicActionSheet,$ionicSlideBoxDelegate,$ionicHistory,ionicMaterialInk,ionicMaterialMotion,$window,$ionicModal,base64,md5,$document,$sce,$ionicGesture,$translate,tmhDynamicLocale){
 	
@@ -586,23 +1155,22 @@ $scope.$on("$ionicView.afterEnter", function (){
 		       console.log(e);
             }            
             
-            $http.get("http://abbayosua.host/apps/bfg/rest_api.php?json=me").then(function(resp){
-                
-                if(resp.data.data.status == 401){
+            $http.get("http://abbayosua.host/apps/bfg/rest-api.php?json=updateapp").then(function(resp){
+				console.log(resp.data);
+                if(resp.data.data.status == "NEEDUPDATE"){
                	    $ionicHistory.nextViewOptions({
                 		disableAnimate: true,
                 		disableBack: true
                 	});
-        			$state.go("amaya_tower.welcome");
-                  	radioAudioPlayer.pause();
+        			$state.go("batam_fiber_glass.updateapps");
+                  	console.log("TRIGERRED");
                 }else{
-                    $scope.current_user = resp.data.me ;
-                    $rootScope.current_user = resp.data.me ;
+					console.log("LATEST VERSION");
                 }
                        
                 
             },function(resp){   
-                $state.go("amaya_tower.welcome"); 
+                $state.go("batam_fiber_glass.update"); 
             }).finally(function(){   
         		$timeout(function() {
         			$ionicLoading.hide();
@@ -1117,7 +1685,7 @@ $scope.submitUser = function(form){
 		var $messages, $title = null;
 		$http({
 				method:"POST",
-				url: "http://abbayosua.host/apps/bfg/rest_api.php?json=submit&form=user",
+				url: "http://abbayosua.host/apps/bfg/rest-api.php?json=submit&form=user",
 				data: $httpParamSerializer($scope.form_user),  // pass in data as strings
 				headers: {"Content-Type":"application/x-www-form-urlencoded"}  // set the headers so angular passing info as form data (not request payload)
 			})
@@ -1142,8 +1710,6 @@ $scope.submitUser = function(form){
 						$scope.form_user.uname = "";
 						$scope.form_user.pwd = "";
 						$scope.form_user.address = "";
-						$scope.form_user.type_ic = "";
-						$scope.form_user.no_ic = "";
 						$scope.form_user.phone = "";
 						$scope.form_user.email = "";
 					}
@@ -2622,6 +3188,77 @@ $ionicLoading.show();
 $timeout(function() {$ionicLoading.hide();}, 1500);    			
 		} catch(e){
 			console.log("%cerror: %cPage: `testimonials` and field: `Custom Controller`","color:blue;font-size:18px","color:red;font-size:18px");
+			console.dir(e);
+		}
+	}
+	$scope.rating = {};
+	$scope.rating.max = 5;
+	
+	// animation ink (ionic-material)
+	ionicMaterialInk.displayEffect();
+	controller_by_user();
+})
+
+// TODO: updateappsCtrl --|-- 
+.controller("updateappsCtrl", function($ionicConfig,$scope,$rootScope,$state,$location,$ionicScrollDelegate,$ionicListDelegate,$http,$httpParamSerializer,$stateParams,$timeout,$interval,$ionicLoading,$ionicPopup,$ionicPopover,$ionicActionSheet,$ionicSlideBoxDelegate,$ionicHistory,ionicMaterialInk,ionicMaterialMotion,$window,$ionicModal,base64,md5,$document,$sce,$ionicGesture,$translate,tmhDynamicLocale){
+	
+	$rootScope.headerExists = true;
+	$rootScope.ionWidth = $document[0].body.querySelector(".view-container").offsetWidth || 412;
+	$rootScope.grid64 = parseInt($rootScope.ionWidth / 64) ;
+	$rootScope.grid80 = parseInt($rootScope.ionWidth / 80) ;
+	$rootScope.grid128 = parseInt($rootScope.ionWidth / 128) ;
+	$rootScope.grid256 = parseInt($rootScope.ionWidth / 256) ;
+	$rootScope.last_edit = "page" ;
+	$scope.$on("$ionicView.afterEnter", function (){
+		var page_id = $state.current.name ;
+		$rootScope.page_id = page_id.replace(".","-") ;
+	});
+	if($rootScope.headerShrink == true){
+		$scope.$on("$ionicView.enter", function(){
+			$scope.scrollTop();
+		});
+	};
+	// TODO: updateappsCtrl --|-- $scope.scrollTop
+	$rootScope.scrollTop = function(){
+		$timeout(function(){
+			$ionicScrollDelegate.$getByHandle("top").scrollTop();
+		},100);
+	};
+	// TODO: updateappsCtrl --|-- $scope.toggleGroup
+	$scope.toggleGroup = function(group) {
+		if ($scope.isGroupShown(group)) {
+			$scope.shownGroup = null;
+		} else {
+			$scope.shownGroup = group;
+		}
+	};
+	
+	$scope.isGroupShown = function(group) {
+		return $scope.shownGroup === group;
+	};
+	
+	// TODO: updateappsCtrl --|-- $scope.redirect
+	// redirect
+	$scope.redirect = function($url){
+		$window.location.href = $url;
+	};
+	
+	// Set Motion
+	$timeout(function(){
+		ionicMaterialMotion.slideUp({
+			selector: ".slide-up"
+		});
+	}, 300);
+	// code 
+
+	// TODO: updateappsCtrl --|-- controller_by_user
+	// controller by user 
+	function controller_by_user(){
+		try {
+			
+			
+		} catch(e){
+			console.log("%cerror: %cPage: `updateapps` and field: `Custom Controller`","color:blue;font-size:18px","color:red;font-size:18px");
 			console.dir(e);
 		}
 	}

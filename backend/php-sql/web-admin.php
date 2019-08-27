@@ -18,7 +18,7 @@ $config["pass"]			= "123qwe!@#QWE" ; 		//Password SQL
 $config["dbase"]			= "abbahost_bfg" ; 		//Database
 /** admin **/
 $config["email"]			= "admin" ; 		//email for login
-$config["password"]			= "9168fa8e6cb3ca255be60ee52aa3c1938d1d5de3" ; 		// sha1(password)
+$config["password"]			= "d033e22ae348aeb5660fc2140aec35850c4da997" ; 		// sha1(password)
 $config["utf8"]			= true; 		
 $config["theme"]			= "paper" ;		// theme name you can get here https://www.bootstrapcdn.com/bootswatch/
 $config["navbar"]		= "nav-stacked" ; 		// nav-bar or nav-stacked
@@ -38,8 +38,12 @@ $config["onesignal-appkey"]			= "OTIxNTE3NTMtZmJiYi00NjI1LTk1MjctODA3Njk4YzlmY2R
 
 /** LANGGUAGE:START **/
 define("LANG_PUSH_NOTIFICATION","Push Notifications");
+define("LANG_CUSTOM_MESSAGES","Custom Messagess");
 define("LANG_USER","Users");
 define("LANG_ID","Ids");
+define("LANG_INFO","Infos");
+define("LANG_IMAGES","Imagess");
+define("LANG_HTML","Htmls");
 define("LANG_FULLNAME","Fullnames");
 define("LANG_UNAME","Unames");
 define("LANG_PWD","Pwds");
@@ -210,6 +214,11 @@ if($_SESSION["IS_ADMIN"]==true){
 	}else{
 		$tags_html .= "<li><a href='?table=home'>".@LANG_HOME."</a></li>" ;
 	}
+	if($_GET["table"]=="custom_messagess"){
+		$tags_html .= "<li class=\"active\"><a href='?table=custom_messagess'>". @LANG_CUSTOM_MESSAGES."</a></li>" ;
+	}else{
+		$tags_html .= "<li><a href='?table=custom_messagess'>". @LANG_CUSTOM_MESSAGES."</a></li>" ;
+	}
 	if($_GET["table"]=="users"){
 		$tags_html .= "<li class=\"active\"><a href='?table=users'>". @LANG_USER."</a></li>" ;
 	}else{
@@ -241,6 +250,25 @@ if($_SESSION["IS_ADMIN"]==true){
 					$tags_html .= "<div class=\"col-md-4\">" ;
 					$tags_html .= "<div class=\"panel panel-primary\" >" ;
 					$tags_html .= "<div class=\"panel-heading\">" ;
+					$tags_html .= "<h4  class=\"panel-title\"><span class=\"glyphicon glyphicon-list-alt\"></span> ". @LANG_CUSTOM_MESSAGES ."</h4>" ;
+					$tags_html .= "</div>" ;
+					$tags_html .= "<div class=\"panel-body\" style=\"min-height: 150px;\">" ;
+					$tags_html .= "<ul class=\"list\">" ;
+					/** fetch data from custom_messages **/
+					$sql_query = "SELECT * FROM `custom_messages` ORDER BY `id`  DESC LIMIT 0 , 5" ;
+					if($result = $mysql->query($sql_query)){
+						while ($data = $result->fetch_array()){
+							$tags_html .= "<li>" . htmlentities(stripslashes($data["info"])) . "</li>" ;
+						}
+					}
+					$tags_html .= "</ul>" ;
+					$tags_html .= "</div>" ;
+					$tags_html .= "<div class=\"panel-footer text-right\"><a href=\"?table=custom_messagess\" class=\"btn btn-sm btn-primary\">".LANG_MORE."</a></div>" ;
+					$tags_html .= "</div>" ;
+					$tags_html .= "</div>" ;
+					$tags_html .= "<div class=\"col-md-4\">" ;
+					$tags_html .= "<div class=\"panel panel-success\" >" ;
+					$tags_html .= "<div class=\"panel-heading\">" ;
 					$tags_html .= "<h4  class=\"panel-title\"><span class=\"glyphicon glyphicon-list-alt\"></span> ". @LANG_USER ."</h4>" ;
 					$tags_html .= "</div>" ;
 					$tags_html .= "<div class=\"panel-body\" style=\"min-height: 150px;\">" ;
@@ -254,11 +282,297 @@ if($_SESSION["IS_ADMIN"]==true){
 					}
 					$tags_html .= "</ul>" ;
 					$tags_html .= "</div>" ;
-					$tags_html .= "<div class=\"panel-footer text-right\"><a href=\"?table=users\" class=\"btn btn-sm btn-primary\">".LANG_MORE."</a></div>" ;
+					$tags_html .= "<div class=\"panel-footer text-right\"><a href=\"?table=users\" class=\"btn btn-sm btn-success\">".LANG_MORE."</a></div>" ;
 					$tags_html .= "</div>" ;
 					$tags_html .= "</div>" ;
 					$tags_html .= "</div>" ;
 		break;
+		// TODO: Custom_messagess
+		case "custom_messagess":
+					$tags_html .= "<h4>". @LANG_CUSTOM_MESSAGES ."</h4>" ;
+				switch($_GET["action"]){
+					// TODO: ---- listing
+					case "list":
+					$tags_html .= "<ul class=\"nav nav-tabs\">" ;
+					$tags_html .= "<li class=\"active\"><a href=\"?table=custom_messagess\">".@LANG_LIST."</a></li>" ;
+					$tags_html .= "<li><a href=\"?table=custom_messagess&action=add\">".@LANG_ADD."</a></li>" ;
+					$tags_html .= "</ul>" ;
+					$tags_html .= "<br/>" ;
+					$tags_html .= "<div class=\"table-responsive\">" ;
+					$table_html = "<table id=\"datatable\" class=\"table table-striped table-hover\">" ;
+					$table_html .= "<thead>" ;
+					$table_html .= "<tr>" ;
+					$table_html .= "<th>".@LANG_INFO."</th>" ;
+					$table_html .= "<th>".@LANG_IMAGES."</th>" ;
+					$table_html .= "<th>".@LANG_HTML."</th>" ;
+					$table_html .= "<th style=\"width:100px;\">Action</th>" ;
+					$table_html .= "</tr>" ;
+					$table_html .= "</thead>" ;
+					$table_html .= "<tbody>" ;
+					/** fetch data from mysql **/
+					$sql_query = "SELECT * FROM `custom_messages`" ;
+					if($result = $mysql->query($sql_query)){
+						while ($data = $result->fetch_array()){
+							$table_html .= "<tr>" ;
+							$table_html .= "<td>" . htmlentities(stripslashes($data["info"])) . "</td>" ;
+							$table_html .= "<td><img src=\"" . $data["images"] . "\" alt=\"#\" width=\"64\" height=\"64\" /></td>" ;
+							$content_html = substr( strip_tags($data["html"]),0,50);
+							$table_html .= "<td>" . stripslashes($content_html). "...</td>" ;
+							$table_html .= "<td>" ;
+							$table_html .= "<div class=\"btn-group\" >" ;
+							if($config["onesignal-appkey"] !== ""){
+								$table_html .= "<a target=\"_blank\" class=\"btn btn-sm btn-info\" href=\"?table=push-notification&specific=custom_messages_singles/". $data["id"]. "\"><span class=\"glyphicon glyphicon-bell\"></span></a> " ;
+							}
+							$table_html .= "<a class=\"btn btn-sm btn-warning\" href=\"?table=custom_messagess&action=edit&id=". $data["id"]. "\"><span class=\"glyphicon glyphicon-pencil\"></span></a> " ;
+							$table_html .= "<a onclick=\"return confirm('Are you sure you want to delete ID#". $data["id"]. "')\" class=\"btn btn-sm btn-danger\" href=\"?table=custom_messagess&action=delete&id=". $data["id"]. "\"><span class=\"glyphicon glyphicon-trash\"></span></a> " ;
+							$table_html .= "</div>" ;
+							$table_html .= "</td>" ;
+							$table_html .= "</tr>" ;
+							$table_html .= "\r\n" ;
+						}
+						$result->close();
+					}
+				$table_html .= "</tbody>" ;
+				$table_html .= "</table>" ;
+				$table_html .= "</div>" ;
+				$tags_html .= $table_html;
+				break;
+			case "add":
+				// TODO: ---- add
+				$tags_html .= "<ul class=\"nav nav-tabs\">" ;
+				$tags_html .= "<li><a href=\"?table=custom_messagess&action=list\">".@LANG_LIST."</a></li>" ;
+				$tags_html .= "<li class=\"active\"><a href=\"?table=custom_messagess&action=add\">".@LANG_ADD."</a></li>" ;
+				$tags_html .= "</ul>" ;
+				$tags_html .= "<br/>" ;
+	
+				/** push button **/
+				if(isset($_POST["add"])){
+	
+					/** avoid error **/
+					$data_info = "";
+					$data_images = "";
+					$data_html = "";
+	
+					/** get input **/
+					if(isset($_POST["info"])){
+						$data_info = addslashes($_POST["info"]);
+					}
+					if(isset($_POST["images"])){
+						$data_images = addslashes($_POST["images"]);
+					}
+				if(isset($_FILES["images-upload"]["name"])){
+					if($_FILES["images-upload"]["name"]!=""){
+						$ext = pathinfo($_FILES["images-upload"]["name"],PATHINFO_EXTENSION);
+						$uploadfile =  "media/image/". sha1(time()).".".$ext;
+						$uploadtemp =  $_FILES["images-upload"]["tmp_name"];
+						$mimetype = getimagesize($uploadtemp);
+						if(!is_dir(dirname(__FILE__)."/media/image/")) {
+							mkdir( dirname(__FILE__)."/media/image/",0777, true);
+						}
+							if (in_array(strtolower($ext),$config["image_allowed"])){
+								if(preg_match("/image/",$mimetype["mime"])){
+									move_uploaded_file($uploadtemp,dirname(__FILE__)."/" .$uploadfile);
+									$data_images =  $full_url ."/". $uploadfile;
+								}
+							}
+						}
+					}
+					if(isset($_POST["html"])){
+						$data_html = addslashes($_POST["html"]);
+					}
+	
+					/** prepare save to mysql **/
+					$sql_query = "INSERT INTO `custom_messages` (`info`,`images`,`html`) VALUES ('$data_info','$data_images','$data_html')" ;
+					$stmt = $mysql->prepare($sql_query);
+					$stmt->execute();
+					$stmt->close();
+					header("Location: ?table=custom_messagess&action=list");
+				}
+	
+	
+				/** Create Form **/
+				$tags_html .= '
+				<form id="custom_messages" action="" method="post" enctype="multipart/form-data">
+					
+
+<!--
+// TODO: ----|-- form : ID
+-->
+
+
+<!--
+// TODO: ----|-- form : INFO
+-->
+<div class="form-group">
+	<label for="info">' . @LANG_INFO. '</label>
+	<input  id="info" class="form-control input-info" data-type="heading-1" type="text" name="info" placeholder="" />
+	<p class="help-block"></p>
+</div>
+
+
+<!--
+// TODO: ----|-- form : IMAGES
+-->
+<div class="form-group">
+	<label for="images">' . @LANG_IMAGES. '</label>
+	<textarea id="images" class="form-control input-images"  data-type="images" name="images" ></textarea>
+	<p class="help-block">Using base64 image data (small images) <input data-target="#images" type="file" data-type="image-base64" /> or file upload <input name="images-upload" type="file" data-type="image-upload" /></p>
+</div>
+
+
+<!--
+// TODO: ----|-- form : HTML
+-->
+<div class="form-group">
+	<label for="html">' . @LANG_HTML. '</label>
+	<textarea id="html" class="form-control input-html"  data-type="to_trusted" name="html" ></textarea>
+	<p class="help-block"></p>
+</div>
+					<div class="form-group">
+						<label for="add"></label>
+						<input class="btn btn-primary" type="submit" name="add" />
+					</div>
+				</form>
+				';
+			break;
+		case "edit":
+			// TODO: ---- edit
+			$tags_html .= "<ul class=\"nav nav-tabs\">" ;
+			$tags_html .= "<li><a href=\"?table=custom_messagess&action=list\">".@LANG_LIST."</a></li>" ;
+			$tags_html .= "<li><a href=\"?table=custom_messagess&action=add\">".@LANG_ADD."</a></li>" ;
+			$tags_html .= "<li class=\"active\"><a href=\"#\">".@LANG_EDIT."</a></li>" ;
+			$tags_html .= "</ul>" ;
+			$tags_html .= "<br/>" ;
+			/** avoid error **/
+			if(isset($_GET["id"])){
+				/** fix security **/
+				$entry_id = (int)$_GET["id"];
+	
+				/** avoid blank field **/
+				$data_info = "";
+				$data_images = "";
+				$data_html = "";
+	
+				/** push button **/
+				if(isset($_POST["edit"])){
+					/** get input **/
+					if(isset($_POST["info"])){
+						$data_info = addslashes($_POST["info"]);
+					}
+					if(isset($_POST["images"])){
+						$data_images = addslashes($_POST["images"]);
+					}
+				if(isset($_FILES["images-upload"]["name"])){
+					if($_FILES["images-upload"]["name"]!=""){
+						$ext = pathinfo($_FILES["images-upload"]["name"],PATHINFO_EXTENSION);
+						$uploadfile =  "media/image/". sha1(time()).".".$ext;
+						$uploadtemp =  $_FILES["images-upload"]["tmp_name"];
+						$mimetype = getimagesize($uploadtemp);
+						if(!is_dir(dirname(__FILE__)."/media/image/")) {
+							mkdir( dirname(__FILE__)."/media/image/",0777, true);
+						}
+							if (in_array(strtolower($ext),$config["image_allowed"])){
+								if(preg_match("/image/",$mimetype["mime"])){
+									move_uploaded_file($uploadtemp,dirname(__FILE__)."/" .$uploadfile);
+									$data_images =  $full_url."/". $uploadfile;
+								}
+							}
+						}
+					}
+					if(isset($_POST["html"])){
+						$data_html = addslashes($_POST["html"]);
+					}
+	
+					/** update data to sql **/
+					$sql_query = "UPDATE `custom_messages` SET `info` = '$data_info',`images` = '$data_images',`html` = '$data_html' WHERE `id`=$entry_id" ;
+					$stmt = $mysql->prepare($sql_query);
+					$stmt->execute();
+					$stmt->close();
+					header("Location: ?table=custom_messagess&action=list");
+				}
+	
+			/** fetch current data **/
+			$sql_query = "SELECT * FROM `custom_messages`  WHERE `id`=$entry_id LIMIT 0,1" ;
+			if($result = $mysql->query($sql_query)){
+				while ($data = $result->fetch_array()){
+					$rows[] = $data;
+				}
+				$result->close();
+			}
+	
+			/** get single data **/
+			if(isset($rows[0]["info"])){
+				$data_info = stripslashes($rows[0]["info"]) ;
+			}
+			if(isset($rows[0]["images"])){
+				$data_images = stripslashes($rows[0]["images"]) ;
+			}
+			if(isset($rows[0]["html"])){
+				$data_html = stripslashes($rows[0]["html"]) ;
+			}
+	
+			/** buat form edit **/
+			$tags_html .= '
+<form action="" method="post" enctype="multipart/form-data" id="custom_messages">
+
+
+<!--
+// TODO: ----|-- form : ID
+-->
+
+
+<!--
+// TODO: ----|-- form : INFO
+-->
+<div class="form-group">
+	<label for="info">' . @LANG_INFO. '</label>
+	<input  id="info" class="form-control input-info" data-type="heading-1" type="text" name="info" placeholder="" value="'.htmlentities($data_info).'" />
+	<p class="help-block"></p>
+</div>
+
+
+<!--
+// TODO: ----|-- form : IMAGES
+-->
+<div class="form-group">
+	<label for="images">' . @LANG_IMAGES. '</label>
+	<textarea id="images" class="form-control input-images"  data-type="images" name="images" >'.htmlentities($data_images).'</textarea>
+	<p class="help-block">Using base64 image data (small images) <input data-target="#images" type="file" data-type="image-base64" /> or file upload <input name="images-upload" type="file" data-type="image-upload" /></p>
+</div>
+
+
+<!--
+// TODO: ----|-- form : HTML
+-->
+<div class="form-group">
+	<label for="html">' . @LANG_HTML. '</label>
+	<textarea id="html" class="form-control input-html"  data-type="to_trusted" name="html" >'.htmlentities($data_html).'</textarea>
+	<p class="help-block"></p>
+</div>
+<div class="form-group">
+	<label for="edit"></label>
+	<input class="btn btn-primary" type="submit" name="edit" />
+</div>
+</form>
+				';
+			};
+			break;
+			case "delete":
+			// TODO: ---- delete
+				/** avoid error **/
+				if(isset($_GET["id"])){
+					/** fix security **/
+					$entry_id = (int)$_GET["id"];
+					/** delete item in sql **/
+					$sql_query = "DELETE FROM `custom_messages` WHERE `id`=$entry_id" ;
+					$stmt = $mysql->prepare($sql_query);
+					$stmt->execute();
+					$stmt->close();
+					header("Location: ?table=custom_messagess&action=list");
+				};
+				break;
+			}
+			break;
 		// TODO: Users
 		case "users":
 					$tags_html .= "<h4>". @LANG_USER ."</h4>" ;

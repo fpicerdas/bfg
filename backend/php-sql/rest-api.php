@@ -59,6 +59,109 @@ $main_url = "http://" . $_SERVER["HTTP_HOST"] . implode("/",$get_dir)."/";
 
 
 switch($_GET["json"]){	
+	// TODO: -+- Listing : custom_messages
+	case "custom_messages":
+		$rest_api=array();
+		$where = $_where = null;
+		// TODO: -+----+- statement where
+		if(isset($_GET["info"])){
+			if($_GET["info"]!="-1"){
+				$_where[] = "`info` LIKE '".$mysql->escape_string($_GET["info"])."'";
+			}
+		}
+		if(isset($_GET["images"])){
+			if($_GET["images"]!="-1"){
+				$_where[] = "`images` LIKE '".$mysql->escape_string($_GET["images"])."'";
+			}
+		}
+		if(isset($_GET["html"])){
+			if($_GET["html"]!="-1"){
+				$_where[] = "`html` LIKE '".$mysql->escape_string($_GET["html"])."'";
+			}
+		}
+		if(isset($_GET["id"])){
+			if($_GET["id"]!="-1"){
+				$_where[] = "`id` = '".$mysql->escape_string($_GET["id"])."'";
+			}
+		}
+		if(is_array($_where)){
+			$where = " WHERE " . implode(" AND ",$_where);
+		}
+		// TODO: -+----+- orderby
+		$order_by = "`id`";
+		$sort_by = "DESC";
+		if(!isset($_GET["order"])){
+			$_GET["order"] = "`id`";
+		}
+		// TODO: -+----+- sort asc/desc
+		if(!isset($_GET["sort"])){
+			$_GET["sort"] = "desc";
+		}
+		if($_GET["sort"]=="asc"){
+			$sort_by = "ASC";
+		}else{
+			$sort_by = "DESC";
+		}
+		if($_GET["order"]=="id"){
+			$order_by = "`id`";
+		}
+		if($_GET["order"]=="info"){
+			$order_by = "`info`";
+		}
+		if($_GET["order"]=="images"){
+			$order_by = "`images`";
+		}
+		if($_GET["order"]=="html"){
+			$order_by = "`html`";
+		}
+		if($_GET["order"]=="random"){
+			$order_by = "RAND()";
+		}
+		$limit = 100;
+		if(isset($_GET["limit"])){
+			$limit = (int)$_GET["limit"] ;
+		}
+		// TODO: -+----+- SQL Query
+		$sql = "SELECT * FROM `custom_messages` ".$where."ORDER BY ".$order_by." ".$sort_by." LIMIT 0, ".$limit." " ;
+		if($result = $mysql->query($sql)){
+			$z=0;
+			while ($data = $result->fetch_array()){
+				if(isset($data['id'])){$rest_api[$z]['id'] = $data['id'];}; # id
+				#if(isset($data['info'])){$rest_api[$z]['info'] = $data['info'];}; # heading-1
+				#
+				/** images**/
+				$abs_url_images = $config['abs_url_images'].'/';
+				$abs_url_videos = $config['abs_url_videos'].'/';
+				$abs_url_audios = $config['abs_url_audios'].'/';
+				if(!isset($data['images'])){$data['images']='undefined';}; # images
+				if((substr($data['images'], 0, 7)=='http://')||(substr($data['images'], 0, 8)=='https://')){
+					$abs_url_images = $abs_url_videos  = $abs_url_audios = '';
+				}
+				
+				if(substr($data['images'], 0, 5)=='data:'){
+					$abs_url_images = $abs_url_videos  = $abs_url_audios = '';
+				}
+				
+				if($data['images'] != ''){
+					$rest_api[$z]['images'] = $abs_url_images . $data['images']; # images
+				}else{
+					$rest_api[$z]['images'] = ''; # images
+				}
+				#if(isset($data['html'])){$rest_api[$z]['html'] = $data['html'];}; # to_trusted
+				$z++;
+			}
+			$result->close();
+			if(isset($_GET["id"])){
+				if(isset($rest_api[0])){
+					$rest_api = $rest_api[0];
+				}else{
+					$rest_api=array("data"=>array("status"=>404,"title"=>"Not found"),"title"=>"Error","message"=>"Invalid ID");
+				}
+			}
+		}
+
+		break;
+	
 	// TODO: -+- Listing : user
 	case "user":
 		$rest_api=array();
@@ -235,43 +338,49 @@ switch($_GET["json"]){
 		$rest_api["site"]["description"] = "Batam Fiber Glass App" ;
 		$rest_api["site"]["imabuilder"] = "rev18.12.10" ;
 
-		$rest_api["routes"][0]["namespace"] = "user";
-		$rest_api["routes"][0]["tb_version"] = "Upd.1908151100";
+		$rest_api["routes"][0]["namespace"] = "custom_messages";
+		$rest_api["routes"][0]["tb_version"] = "Upd.1908250807";
 		$rest_api["routes"][0]["methods"][] = "GET";
-		$rest_api["routes"][0]["args"]["id"] = array("required"=>"false","description"=>"Selecting `user` based `id`");
-		$rest_api["routes"][0]["args"]["fullname"] = array("required"=>"false","description"=>"Selecting `user` based `fullname`");
-		$rest_api["routes"][0]["args"]["order"] = array("required"=>"false","description"=>"order by `random`, `id`, `fullname`");
+		$rest_api["routes"][0]["args"]["id"] = array("required"=>"false","description"=>"Selecting `custom_messages` based `id`");
+		$rest_api["routes"][0]["args"]["order"] = array("required"=>"false","description"=>"order by `random`, `id`");
 		$rest_api["routes"][0]["args"]["sort"] = array("required"=>"false","description"=>"sort by `asc` or `desc`");
 		$rest_api["routes"][0]["args"]["limit"] = array("required"=>"false","description"=> "limit the items that appear","type"=>"number");
-		$rest_api["routes"][0]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=user";
-		$rest_api["routes"][1]["namespace"] = "me";
+		$rest_api["routes"][0]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=custom_messages";
+		$rest_api["routes"][1]["namespace"] = "user";
+		$rest_api["routes"][1]["tb_version"] = "Upd.1908250654";
 		$rest_api["routes"][1]["methods"][] = "GET";
-		$rest_api["routes"][1]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=me";
-		$rest_api["routes"][2]["namespace"] = "auth";
+		$rest_api["routes"][1]["args"]["id"] = array("required"=>"false","description"=>"Selecting `user` based `id`");
+		$rest_api["routes"][1]["args"]["fullname"] = array("required"=>"false","description"=>"Selecting `user` based `fullname`");
+		$rest_api["routes"][1]["args"]["order"] = array("required"=>"false","description"=>"order by `random`, `id`, `fullname`");
+		$rest_api["routes"][1]["args"]["sort"] = array("required"=>"false","description"=>"sort by `asc` or `desc`");
+		$rest_api["routes"][1]["args"]["limit"] = array("required"=>"false","description"=> "limit the items that appear","type"=>"number");
+		$rest_api["routes"][1]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=user";
+		$rest_api["routes"][2]["namespace"] = "me";
 		$rest_api["routes"][2]["methods"][] = "GET";
-		$rest_api["routes"][2]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=auth";
-		$rest_api["routes"][3]["namespace"] = "submit/me";
-		$rest_api["routes"][3]["methods"][] = "POST";
-		$rest_api["routes"][3]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=submit&form=me";
-		$rest_api["routes"][4]["namespace"] = "submit/order";
-		$rest_api["routes"][4]["tb_version"] = "";
+		$rest_api["routes"][2]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=me";
+		$rest_api["routes"][3]["namespace"] = "auth";
+		$rest_api["routes"][3]["methods"][] = "GET";
+		$rest_api["routes"][3]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=auth";
+		$rest_api["routes"][4]["namespace"] = "submit/me";
 		$rest_api["routes"][4]["methods"][] = "POST";
-		$rest_api["routes"][4]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=submit&form=order";
-		$rest_api["routes"][4]["args"]["date"] = array("required"=>"true","description"=>"Insert data to field `Date` in table `order`");
-		$rest_api["routes"][4]["args"]["service"] = array("required"=>"true","description"=>"Insert data to field `Service` in table `order`");
-		$rest_api["routes"][4]["args"]["note"] = array("required"=>"true","description"=>"Insert data to field `Note` in table `order`");
-		$rest_api["routes"][5]["namespace"] = "submit/user";
+		$rest_api["routes"][4]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=submit&form=me";
+		$rest_api["routes"][5]["namespace"] = "submit/order";
 		$rest_api["routes"][5]["tb_version"] = "";
 		$rest_api["routes"][5]["methods"][] = "POST";
-		$rest_api["routes"][5]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=submit&form=user";
-		$rest_api["routes"][5]["args"]["fullname"] = array("required"=>"true","description"=>"Insert data to field `fullname` in table `user`");
-		$rest_api["routes"][5]["args"]["uname"] = array("required"=>"true","description"=>"Insert data to field `uname` in table `user`");
-		$rest_api["routes"][5]["args"]["pwd"] = array("required"=>"true","description"=>"Insert data to field `pwd` in table `user`");
-		$rest_api["routes"][5]["args"]["address"] = array("required"=>"true","description"=>"Insert data to field `address` in table `user`");
-		$rest_api["routes"][5]["args"]["type_ic"] = array("required"=>"true","description"=>"Insert data to field `type_ic` in table `user`");
-		$rest_api["routes"][5]["args"]["no_ic"] = array("required"=>"true","description"=>"Insert data to field `no_ic` in table `user`");
-		$rest_api["routes"][5]["args"]["phone"] = array("required"=>"true","description"=>"Insert data to field `phone` in table `user`");
-		$rest_api["routes"][5]["args"]["email"] = array("required"=>"true","description"=>"Insert data to field `email` in table `user`");
+		$rest_api["routes"][5]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=submit&form=order";
+		$rest_api["routes"][5]["args"]["date"] = array("required"=>"true","description"=>"Insert data to field `Date` in table `order`");
+		$rest_api["routes"][5]["args"]["service"] = array("required"=>"true","description"=>"Insert data to field `Service` in table `order`");
+		$rest_api["routes"][5]["args"]["note"] = array("required"=>"true","description"=>"Insert data to field `Note` in table `order`");
+		$rest_api["routes"][6]["namespace"] = "submit/user";
+		$rest_api["routes"][6]["tb_version"] = "";
+		$rest_api["routes"][6]["methods"][] = "POST";
+		$rest_api["routes"][6]["_links"]["self"] = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["PHP_SELF"]."?json=submit&form=user";
+		$rest_api["routes"][6]["args"]["fullname"] = array("required"=>"true","description"=>"Insert data to field `fullname` in table `user`");
+		$rest_api["routes"][6]["args"]["uname"] = array("required"=>"true","description"=>"Insert data to field `uname` in table `user`");
+		$rest_api["routes"][6]["args"]["pwd"] = array("required"=>"true","description"=>"Insert data to field `pwd` in table `user`");
+		$rest_api["routes"][6]["args"]["address"] = array("required"=>"true","description"=>"Insert data to field `address` in table `user`");
+		$rest_api["routes"][6]["args"]["phone"] = array("required"=>"true","description"=>"Insert data to field `phone` in table `user`");
+		$rest_api["routes"][6]["args"]["email"] = array("required"=>"true","description"=>"Insert data to field `email` in table `user`");
 		break;
 	// TODO: -+- submit
 
@@ -366,8 +475,6 @@ switch($_GET["json"]){
 				$rest_api["args"]["uname"] = array("required"=>"true","description"=>"Receiving data from the input `uname`");
 				$rest_api["args"]["pwd"] = array("required"=>"true","description"=>"Receiving data from the input `pwd`");
 				$rest_api["args"]["address"] = array("required"=>"true","description"=>"Receiving data from the input `address`");
-				$rest_api["args"]["type_ic"] = array("required"=>"true","description"=>"Receiving data from the input `type_ic`");
-				$rest_api["args"]["no_ic"] = array("required"=>"true","description"=>"Receiving data from the input `no_ic`");
 				$rest_api["args"]["phone"] = array("required"=>"true","description"=>"Receiving data from the input `phone`");
 				$rest_api["args"]["email"] = array("required"=>"true","description"=>"Receiving data from the input `email`");
 				if(!isset($_POST["fullname"])){
@@ -382,12 +489,6 @@ switch($_GET["json"]){
 				if(!isset($_POST["address"])){
 					$_POST["address"]="";
 				}
-				if(!isset($_POST["type_ic"])){
-					$_POST["type_ic"]="";
-				}
-				if(!isset($_POST["no_ic"])){
-					$_POST["no_ic"]="";
-				}
 				if(!isset($_POST["phone"])){
 					$_POST["phone"]="";
 				}
@@ -396,14 +497,12 @@ switch($_GET["json"]){
 				}
 				$rest_api["message"] = "Please! complete the form provided.";
 				$rest_api["title"] = "Notice!";
-				if(($_POST["fullname"] != "") || ($_POST["uname"] != "") || ($_POST["pwd"] != "") || ($_POST["address"] != "") || ($_POST["type_ic"] != "") || ($_POST["no_ic"] != "") || ($_POST["phone"] != "") || ($_POST["email"] != "")){
+				if(($_POST["fullname"] != "") || ($_POST["uname"] != "") || ($_POST["pwd"] != "") || ($_POST["address"] != "") || ($_POST["phone"] != "") || ($_POST["email"] != "")){
 					// avoid undefined
 					$input["fullname"] = "";
 					$input["uname"] = "";
 					$input["pwd"] = "";
 					$input["address"] = "";
-					$input["type_ic"] = "";
-					$input["no_ic"] = "";
 					$input["phone"] = "";
 					$input["email"] = "";
 					// variable post
@@ -423,14 +522,6 @@ switch($_GET["json"]){
 						$input["address"] = $mysql->escape_string($_POST["address"]);
 					}
 
-					if(isset($_POST["type_ic"])){
-						$input["type_ic"] = $mysql->escape_string($_POST["type_ic"]);
-					}
-
-					if(isset($_POST["no_ic"])){
-						$input["no_ic"] = $mysql->escape_string($_POST["no_ic"]);
-					}
-
 					if(isset($_POST["phone"])){
 						$input["phone"] = $mysql->escape_string($_POST["phone"]);
 					}
@@ -439,7 +530,7 @@ switch($_GET["json"]){
 						$input["email"] = $mysql->escape_string($_POST["email"]);
 					}
 
-					$sql_query = "INSERT INTO `user` (`fullname`,`uname`,`pwd`,`address`,`type_ic`,`no_ic`,`phone`,`email`) VALUES ('".$input["fullname"]."','".$input["uname"]."','".$input["pwd"]."','".$input["address"]."','".$input["type_ic"]."','".$input["no_ic"]."','".$input["phone"]."','".$input["email"]."' )";
+					$sql_query = "INSERT INTO `user` (`fullname`,`uname`,`pwd`,`address`,`phone`,`email`) VALUES ('".$input["fullname"]."','".$input["uname"]."','".$input["pwd"]."','".$input["address"]."','".$input["phone"]."','".$input["email"]."' )";
 					if($query = $mysql->query($sql_query)){
 						$rest_api["message"] = "You have successfully signed up, please login!";
 						$rest_api["title"] = "Successfully";

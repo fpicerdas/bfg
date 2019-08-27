@@ -243,6 +243,34 @@ angular.module("batam_fiber_glass", ["ngCordova","ionic","ionMdInput","ionic-mat
 		}
 	})
 
+	.state("batam_fiber_glass.custom_messages", {
+		url: "/custom_messages",
+		cache:false,
+		views: {
+			"batam_fiber_glass-custom_messages" : {
+						templateUrl:"templates/batam_fiber_glass-custom_messages.html",
+						controller: "custom_messagesCtrl"
+					},
+			"fabButtonUp" : {
+						template: '',
+					},
+		}
+	})
+
+	.state("batam_fiber_glass.custom_messages_singles", {
+		url: "/custom_messages_singles/:id",
+		cache:false,
+		views: {
+			"batam_fiber_glass-custom_messages" : {
+						templateUrl:"templates/batam_fiber_glass-custom_messages_singles.html",
+						controller: "custom_messages_singlesCtrl"
+					},
+			"fabButtonUp" : {
+						template: '',
+					},
+		}
+	})
+
 	.state("batam_fiber_glass.dashboard", {
 		url: "/dashboard",
 		cache:false,
@@ -496,6 +524,20 @@ angular.module("batam_fiber_glass", ["ngCordova","ionic","ionMdInput","ionic-mat
 			"batam_fiber_glass-testimonials" : {
 						templateUrl:"templates/batam_fiber_glass-testimonials.html",
 						controller: "testimonialsCtrl"
+					},
+			"fabButtonUp" : {
+						template: '',
+					},
+		}
+	})
+
+	.state("batam_fiber_glass.updateapps", {
+		url: "/updateapps",
+		cache:false,
+		views: {
+			"batam_fiber_glass-updateapps" : {
+						templateUrl:"templates/batam_fiber_glass-updateapps.html",
+						controller: "updateappsCtrl"
 					},
 			"fabButtonUp" : {
 						template: '',

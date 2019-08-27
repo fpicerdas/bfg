@@ -261,8 +261,6 @@ ul.rating li i{color:#FFCC00}
 #page-welcome.has-header:before{content:" ";height:44px;display:block}
 #page-welcome.has-header{top:0;}
 #page-welcome.has-header:before{content:" ";height:0;display:block}
-/** page about_us **/
-
 /** page dashboard **/
 .row{background:#333333;}
 .dashboard-panel{background:#333333;margin-bottom:100px;}
@@ -290,6 +288,8 @@ ul.rating li i{color:#FFCC00}
 
 /** page images **/
 
+/** page menu_1 **/
+
 /** page profile **/
 
 /** page sitestackplan **/
@@ -297,6 +297,8 @@ ul.rating li i{color:#FFCC00}
 /** page slide_tab_menu **/
 
 /** page testimonials **/
+
+/** page updateapps **/
 
 /** page video **/
 
@@ -310,7 +312,7 @@ ul.rating li i{color:#FFCC00}
 
 /** custom css **/
 .page-sitestackplan, .page-floor_plan, .page-images, .page-video .page-menu_1, .page-welcome, .page-dashboard, .page-radio, .page-form_login, .page-form_user, .page-profile, .page-englishservice, .page-video,
-.page-gallery, .page-renungan, .page-renungan_singles, .page-kka, .page-sunday_school, .page-young_adults, .page-menu1, .page-menu2
+.page-gallery, .page-renungan, .page-renungan_singles, .page-kka, .page-sunday_school, .page-young_adults, .page-menu1, .page-menu2, page-menu_1, page-menu_2
 {,
     display: block;
 
